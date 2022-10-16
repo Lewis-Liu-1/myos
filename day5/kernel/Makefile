@@ -1,4 +1,4 @@
-addr=0xc400
+addr=0x7c00
 OBJDIR=.
 APP=kernel
 
@@ -10,16 +10,22 @@ LDFLAGS=-m elf_i386
 
 all:$(APP)
 
-$(APP):entry.o main.o 
+$(APP):entry.o main.o
 	ld $(LDFLAGS) -N -e start -Ttext $(addr) -o $@.out $^
 	objdump -S $@.out >$@.asm
 	objcopy -S -O binary $@.out $@
+
+entry.o:entry.S
+	gcc -nostdinc $(CFLAGS) -c -o $@ $<
 
 %.o:%.S
 	gcc -nostdinc $(CFLAGS) -c -o $@ $<
 
 %.o:%.c
 	gcc -nostdinc $(CFLAGS) -Os -c -o $@ $<
+
+run:
+	qemu-system-i386 -drive file=kernel,if=floppy
 
 clean:
 	@rm -f *.o *.out *.asm *.d $(APP)
