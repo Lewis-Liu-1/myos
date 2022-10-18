@@ -1,6 +1,6 @@
 #include "x86.h"
-
 #include "header.h"
+#include "fontascii.h"
 
 #define COL8_000000		0
 #define COL8_FF0000		1
@@ -120,6 +120,16 @@ void putfont8(char *vram, int xsize, int x, int y, char c, char *font)
 	return;
 }
 
+void putfont8_asc(char* vram, int xsize, int x, int y, char c, char *s){
+	//其实这就是一个简易版本的printf
+	extern char hankaku[2048];
+	for(; *s!=0x00; s++){
+		putfont8(vram, xsize, x, y, c, hankaku+*s*16);
+		x+=8;
+	}
+	return;
+}
+
 struct BOOTINFO {
 	char cyls, leds, vmode, reserve;
 	short scrnx, scrny;
@@ -137,7 +147,11 @@ void bootmain(void)
 
 	init_palette();
 	init_screen(binfo->vram, binfo->scrnx, binfo->scrny);
-	putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);
+	//putfont8(binfo->vram, binfo->scrnx, 10, 10, COL8_FFFFFF, font_A);
+
+	putfont8_asc(binfo->vram, binfo->scrnx, 8, 8, COL8_FFFFFF, "ChrisZZ");
+	putfont8_asc(binfo->vram, binfo->scrnx, 31, 31, COL8_000000, "Haribote OS");
+	putfont8_asc(binfo->vram, binfo->scrnx, 32, 32, COL8_FFFFFF, "Haribote OS");
 
     for (;;)
     {

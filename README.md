@@ -29,3 +29,4 @@ Logical sector size is zero.
 [root]# mount -o loop -t auto floppy.img /mnt/floppy/
 
 
+OSAK PAGE 113 explains GDT IDT
