@@ -1,27 +1,6 @@
 #include "color.h"
 #include "header.h"
 
-struct BOOTINFO
-{
-	char cyls, leds, vmode, reserve;
-	short scrnx, scrny;
-	char *vram;
-};
-
-struct SEGMENT_DESCRIPTOR
-{
-	short limit_low, base_low;
-	char base_mid, access_right;
-	char limit_high, base_high;
-};
-
-struct GATE_DESCRIPTOR
-{
-	short offset_low, selector;
-	char dw_count, access_right;
-	short offset_high;
-};
-
 void set_segmdesc(struct SEGMENT_DESCRIPTOR *sd, unsigned int limit, int base, int ar)
 {
 	if (limit > 0xfffff)
@@ -72,6 +51,11 @@ void init_gdtidt(void)
 	}
 	load_idtr(0x7ff, 0x0026f800);
 
+	/* IDT�̐ݒ� */
+	set_gatedesc(idt + 0x21, (int) asm_inthandler21, 2 * 8, AR_INTGATE32);
+	set_gatedesc(idt + 0x27, (int) asm_inthandler27, 2 * 8, AR_INTGATE32);
+	set_gatedesc(idt + 0x2c, (int) asm_inthandler2c, 2 * 8, AR_INTGATE32);
+
 	return;
 }
 
@@ -83,6 +67,9 @@ void bootmain(void)
 	int mx, my;
 
 	init_gdtidt();
+	init_pic();
+	io_sti(); /* IDT/PICÌú»ªIíÁœÌÅCPUÌèÝÖ~ðð */
+
 	init_palette();
 	init_screen8(binfo->vram, binfo->scrnx, binfo->scrny);
 	mx = (binfo->scrnx - 16) / 2; /* ��ʒ����ɂȂ�悤�ɍ��W�v�Z */
@@ -91,6 +78,9 @@ void bootmain(void)
 	putblock8_8(binfo->vram, binfo->scrnx, 16, 16, mx, my, mcursor, 16);
 	sprintf(s, "(%d, %d)", mx, my);
 	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 0, COL8_FFFFFF, s);
+
+	outb(PIC0_IMR, 0xf9);
+	outb(PIC1_IMR, 0xef);
 
 	for (;;)
 	{
