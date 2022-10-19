@@ -26,7 +26,6 @@ void init_pic(void)
 }
 
 void inthandler21(int *esp)
-/* PS/2L[{[h©çÌèÝ */
 {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     boxfill8(binfo->vram, binfo->scrnx, COL8_000000, 0, 0, 32 * 8 - 1, 15);
@@ -38,7 +37,6 @@ void inthandler21(int *esp)
 }
 
 void inthandler2c(int *esp)
-/* PS/2}EX©çÌèÝ */
 {
     struct BOOTINFO *binfo = (struct BOOTINFO *)ADR_BOOTINFO;
     boxfill8(binfo->vram, binfo->scrnx, COL8_000000, 0, 0, 32 * 8 - 1, 15);
@@ -50,12 +48,6 @@ void inthandler2c(int *esp)
 }
 
 void inthandler27(int *esp)
-/* PIC0©çÌs®SèÝÎô */
-/* Athlon64X2@ÈÇÅÍ`bvZbgÌsÉæèPICÌú»É±ÌèÝª1xŸ¯š±é */
-/* ±ÌèÝÖÍA»ÌèÝÉÎµÄœàµÈ¢Åâèß²· */
-/* ÈºœàµÈ­Ä¢¢ÌH
-    š  ±ÌèÝÍPICú»ÌdCIÈmCYÉæÁÄ­¶µœàÌÈÌÅA
-        Ü¶ßÉœ©µÄâéKvªÈ¢B									*/
 {
     outb(PIC0_OCW2, 0x67); /* IRQ-07ót®¹ðPICÉÊm(7-1QÆ) */
     return;

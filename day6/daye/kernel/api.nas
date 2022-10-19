@@ -1,7 +1,7 @@
 
 [BITS 32]						; 32�r�b�g���[�h�p�̋@�B�����点��
 
-		GLOBAL	load_gdtr, load_idtr, asm_inthandler27, asm_inthandler21,asm_inthandler2c
+		GLOBAL	load_gdtr, load_idtr, asm_inthandler27, asm_inthandler21,asm_inthandler2c 
 		EXTERN	inthandler21, inthandler27, inthandler2c
 
 ;	load_gdtr(0x0000ffff, 0x00270000);
