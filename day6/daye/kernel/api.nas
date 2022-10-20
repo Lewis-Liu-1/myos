@@ -1,8 +1,9 @@
 
 [BITS 32]						; 32�r�b�g���[�h�p�̋@�B�����点��
 
+
 		GLOBAL	load_gdtr, load_idtr, asm_inthandler27, asm_inthandler21,asm_inthandler2c 
-		EXTERN	inthandler21, inthandler27, inthandler2c
+		EXTERN	inthandler21, inthandler27, inthandler2c, keyboard_handler
 
 ;	load_gdtr(0x0000ffff, 0x00270000);
 load_gdtr:		; void load_gdtr(int limit, int addr);
@@ -28,7 +29,7 @@ asm_inthandler21:
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
-		CALL	inthandler21
+		CALL	keyboard_handler; inthandler21
 		POP		EAX
 		POPAD
 		POP		DS
@@ -44,7 +45,7 @@ asm_inthandler27:
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
-		CALL	inthandler27
+		;CALL	inthandler27
 		POP		EAX
 		POPAD
 		POP		DS
@@ -60,9 +61,10 @@ asm_inthandler2c:
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
-		CALL	inthandler2c
+		;CALL	inthandler2c
 		POP		EAX
 		POPAD
 		POP		DS
 		POP		ES
 		IRETD
+	

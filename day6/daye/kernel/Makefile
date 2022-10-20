@@ -5,6 +5,7 @@ CFLAGS := $(CFLAGS) -O1 -fno-builtin -I$(OBJDIR) -MD
 CFLAGS += -fno-omit-frame-pointer
 CFLAGS += -Wall -Wno-format -Wno-unused -Werror -gstabs -m32
 CFLAGS += -fno-stack-protector
+# -mgeneral-regs-only
 
 LDFLAGS=-m elf_i386
 

@@ -27,10 +27,9 @@ void set_gatedesc(struct GATE_DESCRIPTOR *gd, int offset, int selector, int ar)
 	return;
 }
 
-void init_gdtidt(void)
+void init_gdt(void)
 {
 	struct SEGMENT_DESCRIPTOR *gdt = (struct SEGMENT_DESCRIPTOR *)0x00270000;
-	struct GATE_DESCRIPTOR *idt = (struct GATE_DESCRIPTOR *)0x0026f800;
 	int i;
 
 	/* GDT�̏����� */
@@ -44,7 +43,12 @@ void init_gdtidt(void)
 
 	// load segment upper limit and address to GDTR (48 bits register)
 	load_gdtr(0xffff, 0x00270000);
-
+}
+#if 0
+void init_idt0(void)
+{
+	int i;
+	struct GATE_DESCRIPTOR *idt = (struct GATE_DESCRIPTOR *)0x0026f800;
 	/* IDT�̏����� */
 	for (i = 0; i < 0x7ff / 8; i++)
 	{
@@ -59,6 +63,7 @@ void init_gdtidt(void)
 
 	return;
 }
+#endif
 #define PIC1_COMMAND 0x20
 #define PIC1_DATA 0x21
 #define PIC2_COMMAND 0xA0
@@ -67,23 +72,28 @@ void init_gdtidt(void)
 
 unsigned char initPS2();
 unsigned char initKeyboard();
+void init_idt();
+
 void bootmain(void)
 {
 	struct BOOTINFO *binfo = (struct BOOTINFO *)0x0ff0;
 	char s[40], mcursor[256];
 	int mx, my;
 
-	init_gdtidt();
-	init_pic();
+	init_gdt();
+	
+	//init_idt();
+	//init_pic();
 
-	//enable ps/2 keyboard
-	//initPS2();
-    //unsigned char keyboardinit = initKeyboard();
+	// enable ps/2 keyboard
+	// initPS2();
+	// unsigned char keyboardinit = initKeyboard();
 
-    //outb(PIC1_DATA, 0);
-    //outb(PIC2_DATA, 0);
+	// outb(PIC1_DATA, 0);
+	// outb(PIC2_DATA, 0);
 
-	io_sti();
+	//io_sti();
+	init_idt();
 
 #if 1
 	init_palette();
