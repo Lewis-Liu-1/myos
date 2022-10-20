@@ -38,22 +38,56 @@ void keyboard_handler(int *esp)
     }
 }
 
-void inthandler2c(int *esp)
-/* PS/2}EX©çÌèÝ */
+#endif
+
+void init_idt()
 {
     struct IDT_entry IDT[256];
     unsigned long keyboard_address;
     unsigned long idt_address;
     unsigned long idt_ptr[2];
 
-void inthandler27(int *esp)
-/* PIC0©çÌs®SèÝÎô */
-/* Athlon64X2@ÈÇÅÍ`bvZbgÌsÉæèPICÌú»É±ÌèÝª1xŸ¯š±é */
-/* ±ÌèÝÖÍA»ÌèÝÉÎµÄœàµÈ¢Åâèß²· */
-/* ÈºœàµÈ­Ä¢¢ÌH
-    š  ±ÌèÝÍPICú»ÌdCIÈmCYÉæÁÄ­¶µœàÌÈÌÅA
-        Ü¶ßÉœ©µÄâéKvªÈ¢B									*/
-{
-    outb(PIC0_OCW2, 0x67); /* IRQ-07ót®¹ðPICÉÊm(7-1QÆ) */
-    return;
+    keyboard_address = (unsigned long) asm_inthandler21;
+    //keyboard_handler;
+    IDT[0x21].offset_lowerbits = keyboard_address & 0xffff;
+    IDT[0x21].selector = 0x8;
+    IDT[0x21].zero = 0;
+    IDT[0x21].type_attr = 0x8e;
+    IDT[0x21].offset_higherbits = (keyboard_address & 0xffff0000) >> 16;
+
+    /*
+                PIC1   PIC2
+    Commands    0x20   0xA0
+    Data        0x21   0xA1
+
+    */
+
+    // ICW1 - init
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
+
+    // ICW2 - reset offset address if IDT
+    // first 32 interrpts are reserved
+    outb(0x21, 0x20);
+    outb(0xA1, 0x28);
+
+    // ICW3 - setup cascading
+    outb(0x21, 0b0);
+    outb(0xA1, 0b0);
+
+    // ICW4 - env info
+    outb(0x21, 0b00000011);
+    outb(0xA1, 0b00000011);
+    // init finished
+
+    // disable IRQs except IRQ1
+    outb(0x21, 0xFD);
+    outb(0xA1, 0xff);
+
+    idt_address = (unsigned long)IDT;
+    idt_ptr[0] = (sizeof(struct IDT_entry) * 256) + ((idt_address & 0xffff) << 16);
+    idt_ptr[1] = idt_address >> 16;
+
+    __asm__ __volatile__("lidt %0" ::"m"(*idt_ptr));
+    __asm__ __volatile__("sti");
 }
