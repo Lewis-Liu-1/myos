@@ -1,6 +1,7 @@
 #include "color.h"
 #include "header.h"
 #include "bootpack.h"
+#include "mm.h"
 
 extern struct FIFO8 keyfifo, mousefifo;
 void enable_mouse(void);
@@ -15,6 +16,8 @@ void bootmain(void)
 	char s[40], mcursor[256], keybuf[32], mousebuf[128];
 	int mx, my, i;
 	struct MOUSE_DEC mdec;
+	unsigned int memtotal;
+	struct MEMMAN *memman = (struct MEMMAN *) MEMMAN_ADDR;
 
 	init_gdt_idt2();
 
@@ -37,8 +40,13 @@ void bootmain(void)
 
 	enable_mouse();
 
-	i = memtest(0x00400000, 0xbfffffff) / (1024 * 1024);
-	sprintf(s, "memory %dMB", i);
+	memtotal = memtest(0x00400000, 0xbfffffff);
+	memman_init(memman);
+	memman_free(memman, 0x00001000, 0x0009e000); /* 0x00001000 - 0x0009efff */
+	memman_free(memman, 0x00400000, memtotal - 0x00400000);
+
+	sprintf(s, "memory %dMB   free : %dKB",
+			memtotal / (1024 * 1024), memman_total(memman) / 1024);
 	putfonts8_asc(binfo->vram, binfo->scrnx, 0, 32, COL8_FFFFFF, s);
 
 	for (;;)
