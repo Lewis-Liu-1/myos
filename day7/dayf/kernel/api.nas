@@ -2,7 +2,7 @@
 [BITS 32]						; 32�r�b�g���[�h�p�̋@�B�����点��
 
 
-		GLOBAL	load_gdtr, load_idtr1, load_idtr2,  asm_inthandler27, asm_inthandler21,asm_inthandler2c 
+		GLOBAL	load_gdtr, load_idtr1, load_idtr2,  asm_inthandler27, asm_inthandler21,asm_inthandler2c, io_stihlt 
 		EXTERN	inthandler21, inthandler27, inthandler2c, keyboard_handler
 
 ;	load_gdtr(0x0000ffff, 0x00270000);
@@ -25,6 +25,11 @@ load_idtr1:
     lidt [edx]
     sti
     ret
+
+io_stihlt:	; void io_stihlt(void);
+		STI
+		HLT
+		RET
 
 asm_inthandler21:
 		PUSH	ES
@@ -51,7 +56,7 @@ asm_inthandler27:
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
-		;CALL	inthandler27
+		CALL	inthandler27
 		POP		EAX
 		POPAD
 		POP		DS
@@ -67,7 +72,7 @@ asm_inthandler2c:
 		MOV		AX,SS
 		MOV		DS,AX
 		MOV		ES,AX
-		;CALL	inthandler2c
+		CALL	inthandler2c
 		POP		EAX
 		POPAD
 		POP		DS

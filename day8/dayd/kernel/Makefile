@@ -15,7 +15,7 @@ LDFLAGS=-m elf_i386
 
 all:$(APP)
 
-$(APP):entry.o main.o screen.o print.o api.o int.o 
+$(APP):entry.o main.o screen.o api.o int.o idtgdt.o print.o fifo.o
 #	ld $(LDFLAGS) -N -e start -Ttext $(addr) -o $@.out $^
 	ld $(LDFLAGS) -Tloader.lds -o $@.out $^
 	objdump -S $@.out >$@.asm
