@@ -30,15 +30,23 @@ start:
   movw    %ax,%es             # -> Extra Segment
   movw    %ax,%ss             # -> Stack Segment
   
-  movb $0x13,%al  # ;vga 320x200x8 位,color mode 
-  movb $0x00,%ah
+  # movb $0x13,%al  # ;vga 320x200x8 位,color mode 
+  # movb $0x00,%ah
+  # int $0x10
+
+  movw $0x4101,%bx  # ;vga 320x200x8 位,color mode 
+  movw $0x4f02,%ax
   int $0x10
-  
+
 #save color mode in ram 0x0ff0
  movb $8,(VMODE)
  movw $320,(SCRNX)
  movw $200,(SCRNY)
  movl $0x000a0000,(VRAM)
+
+ movw $640,(SCRNX)
+ movw $480,(SCRNY)
+ movl $0xe0000000,(VRAM)
 
  #get keyboard led status
  movb	$0x02,%ah 
@@ -135,7 +143,7 @@ spin:
 gdt:
   SEG_NULL				# null seg
   SEG(STA_X|STA_R, 0x0, 0xffffffff)	# code seg
-  SEG(STA_W, 0x0, 0xffffffff)	        # data seg
+  SEG(STA_W, 0x0,       0xffffffff)	# data seg
 
 gdtdesc:
   .word   0x17                            # sizeof(gdt) - 1

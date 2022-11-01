@@ -25,4 +25,4 @@ hex:
 	hexdump -C $(APP)
 
 clean:
-	rm *.bin
+	rm -rf *.bin

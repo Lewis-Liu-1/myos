@@ -30,3 +30,11 @@ Logical sector size is zero.
 
 
 OSAK PAGE 113 explains GDT IDT
+
+GOOD ARTICLE ABOUT PROTECT MODE GDT
+http://www.osdever.net/tutorials/view/the-world-of-protected-mode
+
+https://blog.csdn.net/goodcrony/article/details/88122934
+
+
+
